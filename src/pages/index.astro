@@ -1,0 +1,75 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import LinkButton from "@/components/LinkButton.astro";
+import Card from "@/components/Card.astro";
+import Hr from "@/components/Hr.astro";
+import getSortedPosts from "@/utils/getSortedPosts";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
+
+const posts = await getCollection("blog");
+
+const sortedPosts = getSortedPosts(posts);
+const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
+const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
+---
+
+<Layout>
+  <Header />
+  <main id="main-content" data-layout="index">
+    <section id="hero" class="pt-8 pb-6">
+      <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
+        健康大作战
+      </h1>
+
+      <p>
+        自述：记忆中最初是中学时候只在肚脐上有一块红，大学期间及工作前2年（2013-2019）没有治疗也基本没有扩散，
+        只在左侧腰处多了一块红色粗糙的皮肤。大概从2020年起按湿疹或特异性皮炎开始不持续治疗。
+        皮肤异常处在这几年间也逐渐变多且明显。主要为背部新增及扩散，四肢新增及扩散（双手前肢为2024年上半年新增）。
+        脖子正前方新增（2024年），眉眼之间有红色趋势（2025） 
+
+        <p style="padding: 4px 0">几乎不痒，大小便正常（肠胃敏感，吃不干净的容易拉肚子或不规则大便），睡眠正常。</p>
+
+      </p>
+    </section>
+
+    <Hr />
+
+    {
+      sortedPosts.length > 0 && (
+        <>
+          <section id="featured" class="pt-12 pb-6">
+            <h2 class="text-2xl font-semibold tracking-wide">最近</h2>
+            <ul>
+              {sortedPosts.map(data => (
+                <Card variant="h3" {...data} />
+              ))}
+            </ul>
+          </section>
+          <Hr />
+          {/* {recentPosts.length > 0 && <Hr />} */}
+        </>
+      )
+    }
+
+    <div class="my-8 text-center">
+      <LinkButton href="/posts/">
+        所有记录
+        <IconArrowRight class="inline-block rtl:-rotate-180" />
+      </LinkButton>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const indexLayout = (document.querySelector("#main-content") as HTMLElement)
+      ?.dataset?.layout;
+    if (indexLayout) {
+      sessionStorage.setItem("backUrl", "/");
+    }
+  });
+</script>
